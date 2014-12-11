@@ -119,7 +119,15 @@ cache_api_v1_server::getCacheContents2(unique_ptr<cacheRequest> arg)
       statsclient.sendRequest("/statsServer?q=cacheMiss", statsHeadSize);
     }
     //Cache it
-    cache.put(urlDigest, httpContent);
+    if (!cache.put(urlDigest, httpContent)) {
+      unique_ptr<bytestream> ret(new bytestream);
+      ret->reserve(httpContent.size());
+      for (int i = 0; i < httpContent.size(); i++) {
+        ret->push_back(httpContent[i]);
+      }  
+      cout << "Return (oversized) data size: " << ret->size() << endl << endl;
+      return ret;
+    }
   } else {
     cout << "HIT" << endl;
     if (USE_STATSSERVER) {

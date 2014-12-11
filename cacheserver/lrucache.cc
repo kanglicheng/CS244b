@@ -35,9 +35,12 @@ std::vector<uint8_t> & lru_cache::get(uint128_t digest) {
   return n->data;
 }
 
-void lru_cache::put(uint128_t digest, std::vector<uint8_t> value) {
+bool lru_cache::put(uint128_t digest, std::vector<uint8_t> value) {
+  if (value.size() > max_size * .6) {
+    return false;
+  }
   size_bytes += value.size();
-  if (size_bytes >= max_size) {
+  while (size_bytes >= max_size) {
     evict();
   }
   node* n;
@@ -49,6 +52,7 @@ void lru_cache::put(uint128_t digest, std::vector<uint8_t> value) {
     cache[digest] = n;
   }
   insert_head(n);
+  return true;
 }
 
 void lru_cache::erase(uint128_t digest) {

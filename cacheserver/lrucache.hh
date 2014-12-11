@@ -26,7 +26,7 @@ public:
   int size();
   void set_max_size(int size);
   std::vector<uint8_t> & get(uint128_t digest);
-  void put(uint128_t digest, std::vector<uint8_t> value);
+  bool put(uint128_t digest, std::vector<uint8_t> value);
   void erase(uint128_t digest);
   bool contains(uint128_t digest);
   friend std::ostream& operator<<(std::ostream& out, const lru_cache& cache);
